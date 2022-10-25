@@ -1,12 +1,15 @@
-
+import "./App.css";
+import React, { useState } from "react";
 import DisplayMovie from './components/DisplayMovie'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
-import Update from './components/Update'
+import Navbar from './components/Navbar'
+
 function App() {
   
   return (
   
     <div>
+      <Navbar/>
+      
       <DisplayMovie />
     </div>
  

@@ -1,120 +1,123 @@
 import React, { useEffect, useState } from "react";
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableRow,
-  Paper,
-} from "@mui/material";
+import Card from "@mui/material/Card";
+import { CardActions, CardContent, Grid, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import { DeleteOutlined } from "@mui/icons-material";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import Update from "./Update";
+import AddMovie from "./AddMovie";
+import { Container } from "@mui/system";
 
 const DisplayMovie = () => {
   const [APIData, setAPIData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [openAddMovie, setOpenAddMovie] = useState(false);
+  const [movieData, setMovieData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [modalIsOpen,setModalIsOpen] = useState(false);
 
-    const setModalIsOpenToTrue =()=>{
-        setModalIsOpen(true)
-    }
-
-    const setModalIsOpenToFalse =()=>{
-        setModalIsOpen(false)
-    }
-  async function displayData() {
-    const response = await fetch(
-      "https://react-poc-947aa-default-rtdb.firebaseio.com/films.json",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    setAPIData(data);
-  }
-  async function deleteData(id) {
-    console.log(id);
-    const response = await fetch(
-      `https://react-poc-947aa-default-rtdb.firebaseio.com/films/${id}.json`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    console.log(data);
-     displayData();
-  }
+  const displayData = () => {
+    axios
+      .get(`https://react-poc-947aa-default-rtdb.firebaseio.com/films.json`)
+      .then((response) => {
+        // console.log(response.data);
+        const loadedMovies = [];
+        const data = response.data;
+        for (const key in data) {
+          const movie = data[key];
+          if (movie !== null) {
+            loadedMovies.push(movie);
+          }
+        }
+        setAPIData(loadedMovies);
+      });
+  };
+  const deleteData = (id) => {
+    axios
+      .delete(
+        `https://react-poc-947aa-default-rtdb.firebaseio.com/films/${id}.json`
+      )
+      .then(() => {
+        displayData();
+      });
+  };
 
   useEffect(() => {
     displayData();
   }, []);
 
-  return (
-    <>
-     {}
-      <input
-        type="text"
-        placeholder="Search.."
-        onChange={(event) => {
-          setSearchTerm(event.target.value);
-        }}
-      />
+  const handleUpdate = (movie) => {
+    setMovieData(movie);
+    setOpen(true);
+  };
 
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Release Date</TableCell>
-              <TableCell>Genre</TableCell>
-              <TableCell>IMDB Rating</TableCell>
-              <TableCell>Update</TableCell>
-              <TableCell>Delete</TableCell>
-              {/* <TableCell>Movie Poster</TableCell> */}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {APIData.filter((val) => {
-              if (searchTerm === "") {
-                return val;
-              } else if (
-                val.Title.toLowerCase().includes(searchTerm.toLowerCase())
-              ) {
-                return val;
-              }
-            }).map((row) => (
-              <TableRow
-                key={row.Id}
-                sx={{ "&:last-child td,&:last-child th": { border: 0 } }}
-              >
-                <TableCell>{row.Title}</TableCell>
-                <TableCell>{row.Released}</TableCell>
-                <TableCell>{row.Genre}</TableCell>
-                <TableCell>{row.imdbRating}</TableCell>
-                {/* <Link to="/update">
-                  <Table.Cell>
-                    <button>Update</button>
-                  </Table.Cell>
-                </Link> */}
-                <TableCell>
-                  <button onClick={setModalIsOpenToTrue}>Update</button>
-                </TableCell>
-                <TableCell><button onClick={()=>deleteData((row.Id)-1)}>Delete</button></TableCell>
-                {/* <TableCell><img src={row.Poster} width="400" 
-     height="500"></img></TableCell> */}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+  return (
+      <>
+      <input
+          type="text"
+          placeholder="Search.."
+          onChange={(event) => {
+            setSearchTerm(event.target.value);
+          }}
+        />
+        <button onClick={() => setOpenAddMovie(true)}>Add Movie</button>
+        <AddMovie
+          movieData={APIData}
+          setOpen={setOpenAddMovie}
+          open={openAddMovie}
+        />
+     
+      
+     <Container>
+     
+
+      <Grid container spacing={3}>
+      
+        {APIData.filter((val) => {
+          if (searchTerm === "") {
+            return val;
+          } else if (
+            val.Title.toLowerCase().includes(searchTerm.toLowerCase())
+          ) {
+            return val;
+          }
+        }).map((row) => (
+          <Grid item key={row.Id} xs={12} md={6} lg={3}>
+            <Card>
+              <CardMedia
+                component="img"
+                height="400"
+                image={row.Poster}
+                sx={{ objectFit: "contain" }}
+                alt="Movie Poster"
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {row.Title}
+                </Typography>
+                <Typography variant="caption" display="block" >
+                  <span style={{}}>
+                <img
+                    src="../Images/IMDB-logo.png"
+                    style={{ width: 60, height: 30 }}
+                  ></img>:{row.imdbRating}</span>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {row.Plot}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <EditIcon onClick={() => handleUpdate(row)} />
+                <Update movieData={movieData} setOpen={setOpen} open={open} />
+                <DeleteOutlined onClick={() => deleteData(row.Id - 1)} />
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      </Container>
+      </>
   );
 };
 
