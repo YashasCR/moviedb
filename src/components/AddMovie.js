@@ -5,10 +5,11 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import axios from "axios";
 
 export default function AddMovie(props) {
-  const {movieData, setOpen , open} = props;
-  const id=movieData.length;
+  const { movieData, setOpen, open } = props;
+  const id = movieData.length;
   const initialValues = {
     Actors: "",
     Awards: "",
@@ -31,23 +32,17 @@ export default function AddMovie(props) {
     setValues({
       ...values,
       [name]: value,
-      Id: id+1
+      Id: id + 1,
     });
   };
 
-  async function addMovieData(data) {
+  const addMovieData = (data) => {
     const id = data.Id - 1;
-    await fetch(
+    axios.post(
       `https://react-poc-947aa-default-rtdb.firebaseio.com/films.json`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      JSON.stringify(data)
     );
-  }
+  };
   const handleCreate = () => {
     addMovieData(values);
     handleClose();
