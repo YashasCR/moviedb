@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
 import axios from "axios";
-import AddMovie from "./AddMovie";
 import { Container } from "@mui/system";
 import MovieCard from "./MovieCard";
 import { useSelector,useDispatch } from 'react-redux';
 
 const DisplayMovie = () => {
   const [APIData, setAPIData] = useState([]);
-
-  const [openAddMovie, setOpenAddMovie] = useState(false);
-
   const searchTerm=useSelector((state)=>state.filter.searchTerm);
 
   const displayData = () => {
@@ -35,15 +31,6 @@ const DisplayMovie = () => {
   }, []);
 
   return (
-    <>
-      
-      <button onClick={() => setOpenAddMovie(true)}>Add Movie</button>
-      <AddMovie
-        movieData={APIData}
-        setOpen={setOpenAddMovie}
-        open={openAddMovie}
-      />
-
       <Container>
         <Grid container spacing={3}>
           {APIData.filter((val) => {
@@ -61,7 +48,6 @@ const DisplayMovie = () => {
           ))}
         </Grid>
       </Container>
-    </>
   );
 };
 
