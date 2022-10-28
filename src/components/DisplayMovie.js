@@ -4,13 +4,14 @@ import axios from "axios";
 import AddMovie from "./AddMovie";
 import { Container } from "@mui/system";
 import MovieCard from "./MovieCard";
+import { useSelector,useDispatch } from 'react-redux';
 
 const DisplayMovie = () => {
   const [APIData, setAPIData] = useState([]);
 
   const [openAddMovie, setOpenAddMovie] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const searchTerm=useSelector((state)=>state.filter.searchTerm);
 
   const displayData = () => {
     axios
@@ -35,13 +36,7 @@ const DisplayMovie = () => {
 
   return (
     <>
-      <input
-        type="text"
-        placeholder="Search.."
-        onChange={(event) => {
-          setSearchTerm(event.target.value);
-        }}
-      />
+      
       <button onClick={() => setOpenAddMovie(true)}>Add Movie</button>
       <AddMovie
         movieData={APIData}
