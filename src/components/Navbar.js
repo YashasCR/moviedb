@@ -6,12 +6,11 @@ export default function Navbar() {
   
   return (
     <nav>
-      <img src="../Images/yifymovies-logo.png" className="nav--logo" />
       <input
         type="text"
         placeholder="Search.."
         onChange={(event) => {
-         dispatch(filterActions.setSearchTerm(event.target.value));
+         dispatch(filterActions.setSearchTerm(event.target.value))
         }}
       />
     </nav>

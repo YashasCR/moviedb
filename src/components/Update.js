@@ -1,36 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { filterActions } from "../store/filter";
 
 export default function Update(props) {
   const { movieData, setOpen, open } = props;
   const [movieTitle, setMovieTitle] = useState("");
   const [movieGenre, setMovieGenre] = useState("");
+  
 
+  const dispatch=useDispatch();
+  
   const handleClose = () => {
+   
     setOpen(false);
+    dispatch(filterActions.setIsNewMovieAddedOrUpdated(true));
+    setTimeout(()=>{
+      dispatch(filterActions.setIsNewMovieAddedOrUpdated(false));
+    },10000)
   };
 
-  const updateData = (data) => {
+  const updateData = async () => {
+    let data = movieData
+
+    const updatedData = {
+      ...data,
+      Title : movieTitle?.length > 0 ? movieTitle : movieData.Title,
+      Genre:movieGenre?.length > 0 ? movieGenre : movieData.Genre
+      
+    }
+
+    console.log(updatedData,"data update hua")
     const id = data.Id - 1;
-    axios.put(
+    const isDataUpdated =  await axios.put(
       `https://react-poc-947aa-default-rtdb.firebaseio.com/films/${id}.json`,
-      JSON.stringify(data)
+      JSON.stringify(updatedData)
     );
+    if(isDataUpdated){
+      handleClose();
+    }
   };
+  
+  // const handleUpdate = () => {
+    
+    // setMovie((prevState)=>{
+    //   return{
+    //     ...prevState,
+    //    e,
+    //    Title:
+    //   }
+    // });
 
-  const handleUpdate = () => {
-    movieData.Genre = movieGenre.length > 0 ? movieGenre : movieData.Genre;
-    movieData.Title = movieTitle.length > 0 ? movieTitle : movieData.Title;
-    updateData(movieData);
-    handleClose();
-  };
+    
+
+    // setMovie({...movie,Title:movieTitle?.length > 0 ? movieTitle : movieData.Title,Genre:movieGenre?.length > 0 ? movieGenre : movieData.Genre,\})
+    
+    // setMovie({
+    //   ...movie,
+    //   movie.,
+    //   movie.
+      
+    // });
+
+    // props.movieData.Genre=movieGenre;
+    // props.movieData.Title=movieTitle;
+    // movieData.Genre = movieGenre?.length > 0 ? movieGenre : movieData.Genre;
+    // movieData.Title = movieTitle?.length > 0 ? movieTitle : movieData.Title;
+  //   updateData(movie);
+  // };
 
   return (
     <div>
@@ -66,7 +109,7 @@ export default function Update(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleUpdate}>Submit</Button>
+          <Button onClick={updateData}>Submit</Button>
         </DialogActions>
       </Dialog>
     </div>

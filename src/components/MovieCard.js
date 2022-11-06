@@ -10,7 +10,7 @@ import axios from "axios";
 
 export default function MovieCard(props) {
   const [open, setOpen] = useState(false);
-  const [movieData, setMovieData] = useState({});
+
   const deleteData = (id) => {
     axios
       .delete(
@@ -20,9 +20,12 @@ export default function MovieCard(props) {
         props.displayData();
       });
   };
-  const handleUpdate = (movie) => {
-    setMovieData(movie);
-    setOpen(true);
+  const handleUpdate = () => {
+
+   
+      setOpen(true);
+   
+    
   };
 
   return (
@@ -50,8 +53,8 @@ export default function MovieCard(props) {
       </Typography>
     </CardContent>
     <CardActions>
-      <EditIcon onClick={() => handleUpdate(props)} />
-      <Update movieData={movieData} setOpen={setOpen} open={open} />
+      <EditIcon onClick={() => handleUpdate()} />
+      <Update movieData={props} setOpen={setOpen} open={open} />
       <DeleteOutlined onClick={() => deleteData(props.Id - 1)} />
     </CardActions>
   </Card>

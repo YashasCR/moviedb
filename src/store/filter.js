@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialFilterState = { searchTerm:""};
+const initialFilterState = { searchTerm:"",isNewMovieAddedOrUpdated:false};
 
 const filterSlice = createSlice({
   name: 'filter',
@@ -9,6 +9,9 @@ const filterSlice = createSlice({
     setSearchTerm(state, action) {
       state.searchTerm = action.payload;
     },
+    setIsNewMovieAddedOrUpdated(state,action){
+        state.isNewMovieAddedOrUpdated = action.payload
+    }
   },
 });
 

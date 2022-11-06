@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
@@ -6,10 +6,13 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
+import { useDispatch, useSelector} from 'react-redux';
+import { filterActions } from "../store/filter";
 
 export default function AddMovie(props) {
-  const { movieData, setOpen, open } = props;
-  const id = movieData.length;
+  const { setOpen, open } = props;
+  const dispatch=useDispatch();
+  const id = (useSelector((state) => state.cardContent.cardData)).length;
   const initialValues = {
     Actors: "",
     Awards: "",
@@ -23,6 +26,10 @@ export default function AddMovie(props) {
   };
   const handleClose = () => {
     setOpen(false);
+    setTimeout(()=>{
+      dispatch(filterActions.setIsNewMovieAddedOrUpdated(false));
+      // redux toolkit value to false
+    },5000)
   };
 
   const [values, setValues] = useState(initialValues);
@@ -36,16 +43,21 @@ export default function AddMovie(props) {
     });
   };
 
-  const addMovieData = (data) => {
-    const id = data.Id - 1;
-    axios.post(
+  const addMovieData =async (data) => {
+    const uploadMovie = await axios.post(
       `https://react-poc-947aa-default-rtdb.firebaseio.com/films.json`,
       JSON.stringify(data)
     );
+
+    if(uploadMovie){
+      dispatch(filterActions.setIsNewMovieAddedOrUpdated(true))
+      handleClose();
+      // redux toolkit -> update value to setUpload to true
+    }
   };
   const handleCreate = () => {
     addMovieData(values);
-    handleClose();
+    
   };
   return (
     <div>
